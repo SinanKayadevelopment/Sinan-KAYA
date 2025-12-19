@@ -135,7 +135,9 @@ function typeText() {
 }
 
 // Start typing animation
-typeText();
+if (typingText) {
+    typeText();
+}
 
 // ===================================
 // INTERSECTION OBSERVER - ANIMATIONS
@@ -208,67 +210,69 @@ function animateCounter(element) {
 // FORM VALIDATION & SUBMISSION
 // ===================================
 
-contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    // Reset previous errors
-    const formGroups = contactForm.querySelectorAll('.form-group');
-    formGroups.forEach(group => {
-        group.classList.remove('error');
-        const errorSpan = group.querySelector('.form-error');
-        if (errorSpan) {
-            errorSpan.textContent = '';
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Reset previous errors
+        const formGroups = contactForm.querySelectorAll('.form-group');
+        formGroups.forEach(group => {
+            group.classList.remove('error');
+            const errorSpan = group.querySelector('.form-error');
+            if (errorSpan) {
+                errorSpan.textContent = '';
+            }
+        });
+        
+        // Validate fields
+        let isValid = true;
+        
+        const name = document.getElementById('name');
+        const email = document.getElementById('email');
+        const subject = document.getElementById('subject');
+        const message = document.getElementById('message');
+        
+        if (name.value.trim().length < 2) {
+            showError(name, 'Name must be at least 2 characters');
+            isValid = false;
+        }
+        
+        if (!isValidEmail(email.value)) {
+            showError(email, 'Please enter a valid email address');
+            isValid = false;
+        }
+        
+        if (subject.value.trim().length < 3) {
+            showError(subject, 'Subject must be at least 3 characters');
+            isValid = false;
+        }
+        
+        if (message.value.trim().length < 10) {
+            showError(message, 'Message must be at least 10 characters');
+            isValid = false;
+        }
+        
+        if (isValid) {
+            // Simulate form submission
+            const submitBtn = contactForm.querySelector('.btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+            
+            setTimeout(() => {
+                // Show success message
+                if (formSuccess) formSuccess.classList.add('show');
+                contactForm.reset();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
+                
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    if (formSuccess) formSuccess.classList.remove('show');
+                }, 5000);
+            }, 1500);
         }
     });
-    
-    // Validate fields
-    let isValid = true;
-    
-    const name = document.getElementById('name');
-    const email = document.getElementById('email');
-    const subject = document.getElementById('subject');
-    const message = document.getElementById('message');
-    
-    if (name.value.trim().length < 2) {
-        showError(name, 'Name must be at least 2 characters');
-        isValid = false;
-    }
-    
-    if (!isValidEmail(email.value)) {
-        showError(email, 'Please enter a valid email address');
-        isValid = false;
-    }
-    
-    if (subject.value.trim().length < 3) {
-        showError(subject, 'Subject must be at least 3 characters');
-        isValid = false;
-    }
-    
-    if (message.value.trim().length < 10) {
-        showError(message, 'Message must be at least 10 characters');
-        isValid = false;
-    }
-    
-    if (isValid) {
-        // Simulate form submission
-        const submitBtn = contactForm.querySelector('.btn-submit');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
-        
-        setTimeout(() => {
-            // Show success message
-            formSuccess.classList.add('show');
-            contactForm.reset();
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
-            
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                formSuccess.classList.remove('show');
-            }, 5000);
-        }, 1500);
-    }
-});
+}
 
 function showError(input, message) {
     const formGroup = input.parentElement;
