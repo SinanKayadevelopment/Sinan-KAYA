@@ -33,7 +33,7 @@ function updateThemeIcon(theme) {
 themeToggle.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
@@ -50,9 +50,15 @@ mobileToggle.addEventListener('click', () => {
 
 // Close mobile menu when clicking on a link
 navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        mobileToggle.classList.remove('active');
+    link.addEventListener('click', (e) => {
+        const dropdown = link.parentElement.classList.contains('nav-dropdown');
+        if (dropdown && window.innerWidth <= 768) {
+            e.preventDefault();
+            link.parentElement.classList.toggle('active');
+        } else {
+            navMenu.classList.remove('active');
+            mobileToggle.classList.remove('active');
+        }
     });
 });
 
@@ -111,7 +117,7 @@ let typingSpeed = 100;
 
 function typeText() {
     const currentPhrase = phrases[phraseIndex];
-    
+
     if (isDeleting) {
         typingText.textContent = currentPhrase.substring(0, charIndex - 1);
         charIndex--;
@@ -121,7 +127,7 @@ function typeText() {
         charIndex++;
         typingSpeed = 100;
     }
-    
+
     if (!isDeleting && charIndex === currentPhrase.length) {
         isDeleting = true;
         typingSpeed = 2000; // Pause at end
@@ -130,7 +136,7 @@ function typeText() {
         phraseIndex = (phraseIndex + 1) % phrases.length;
         typingSpeed = 500; // Pause before next phrase
     }
-    
+
     setTimeout(typeText, typingSpeed);
 }
 
@@ -153,7 +159,7 @@ const observer = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
-            
+
             // Animate skill bars
             if (entry.target.classList.contains('skill-card')) {
                 const progressBar = entry.target.querySelector('.skill-progress');
@@ -162,13 +168,13 @@ const observer = new IntersectionObserver((entries) => {
                     progressBar.style.width = progress + '%';
                 }, 200);
             }
-            
+
             // Animate stat numbers
             if (entry.target.classList.contains('stat-card')) {
                 const statNumber = entry.target.querySelector('.stat-number');
                 animateCounter(statNumber);
             }
-            
+
             observer.unobserve(entry.target);
         }
     });
@@ -192,7 +198,7 @@ function animateCounter(element) {
     const duration = 2000;
     const increment = target / (duration / 16);
     let current = 0;
-    
+
     const updateCounter = () => {
         current += increment;
         if (current < target) {
@@ -202,7 +208,7 @@ function animateCounter(element) {
             element.textContent = target + '+';
         }
     };
-    
+
     updateCounter();
 }
 
@@ -213,7 +219,7 @@ function animateCounter(element) {
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         // Reset previous errors
         const formGroups = contactForm.querySelectorAll('.form-group');
         formGroups.forEach(group => {
@@ -223,48 +229,48 @@ if (contactForm) {
                 errorSpan.textContent = '';
             }
         });
-        
+
         // Validate fields
         let isValid = true;
-        
+
         const name = document.getElementById('name');
         const email = document.getElementById('email');
         const subject = document.getElementById('subject');
         const message = document.getElementById('message');
-        
+
         if (name.value.trim().length < 2) {
             showError(name, 'Name must be at least 2 characters');
             isValid = false;
         }
-        
+
         if (!isValidEmail(email.value)) {
             showError(email, 'Please enter a valid email address');
             isValid = false;
         }
-        
+
         if (subject.value.trim().length < 3) {
             showError(subject, 'Subject must be at least 3 characters');
             isValid = false;
         }
-        
+
         if (message.value.trim().length < 10) {
             showError(message, 'Message must be at least 10 characters');
             isValid = false;
         }
-        
+
         if (isValid) {
             // Simulate form submission
             const submitBtn = contactForm.querySelector('.btn-submit');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
-            
+
             setTimeout(() => {
                 // Show success message
                 if (formSuccess) formSuccess.classList.add('show');
                 contactForm.reset();
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
-                
+
                 // Hide success message after 5 seconds
                 setTimeout(() => {
                     if (formSuccess) formSuccess.classList.remove('show');
@@ -295,7 +301,7 @@ function isValidEmail(email) {
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const parallaxElements = document.querySelectorAll('.gradient-orb');
-    
+
     parallaxElements.forEach((el, index) => {
         const speed = 0.5 + (index * 0.1);
         el.style.transform = `translateY(${scrolled * speed}px)`;
@@ -310,7 +316,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
-        
+
         if (target) {
             const offsetTop = target.offsetTop - 80;
             window.scrollTo({
@@ -338,10 +344,10 @@ document.addEventListener('mousemove', (e) => {
 function animateCursor() {
     const diffX = mouseX - cursorX;
     const diffY = mouseY - cursorY;
-    
+
     cursorX += diffX * 0.1;
     cursorY += diffY * 0.1;
-    
+
     requestAnimationFrame(animateCursor);
 }
 
@@ -358,16 +364,16 @@ projectCards.forEach(card => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        
+
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        
+
         const rotateX = (y - centerY) / 20;
         const rotateY = (centerX - x) / 20;
-        
+
         card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
     });
-    
+
     card.addEventListener('mouseleave', () => {
         card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
     });
@@ -380,11 +386,11 @@ projectCards.forEach(card => {
 window.addEventListener('DOMContentLoaded', () => {
     initTheme();
     updateActiveNavLink();
-    
+
     // Add entrance animation to hero section
     const heroContent = document.querySelector('.hero-content');
     const heroImage = document.querySelector('.hero-image');
-    
+
     setTimeout(() => {
         if (heroContent) {
             heroContent.style.opacity = '1';
@@ -401,13 +407,13 @@ window.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const heroContent = document.querySelector('.hero-content');
     const heroImage = document.querySelector('.hero-image');
-    
+
     if (heroContent) {
         heroContent.style.opacity = '0';
         heroContent.style.transform = 'translateY(30px)';
         heroContent.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
     }
-    
+
     if (heroImage) {
         heroImage.style.opacity = '0';
         heroImage.style.transform = 'translateX(50px)';
